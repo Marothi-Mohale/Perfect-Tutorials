@@ -68,6 +68,19 @@ a {
   text-decoration: none;
 }
 
+.brand-logo {
+  display: inline-flex;
+  align-items: center;
+  line-height: 0;
+}
+
+.brand-logo-image {
+  display: block;
+  height: auto;
+  max-width: 100%;
+  object-fit: contain;
+}
+
 button,
 input,
 textarea,

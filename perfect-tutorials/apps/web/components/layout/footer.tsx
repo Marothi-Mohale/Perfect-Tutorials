@@ -1,11 +1,15 @@
 import Link from "next/link";
+import { BrandLogo } from "./brand-logo";
 
 export function Footer() {
   return (
     <footer className="footer-theme mt-16">
       <div className="page-shell grid gap-10 py-14 md:grid-cols-3">
         <div>
-          <h3 className="text-2xl">Perfect Tutorials</h3>
+          <BrandLogo
+            className="inline-flex"
+            imageClassName="h-12 w-auto brightness-0 invert"
+          />
           <p className="mt-4">
             Helping learners master Maths and Science with confidence, clarity,
             and consistent support.
