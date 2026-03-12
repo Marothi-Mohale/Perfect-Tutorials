@@ -22,6 +22,88 @@ pnpm test:e2e
 
 Copy values from `.env.example` into your deployment platform or local shell.
 
+## Deploying To Render
+
+Render is the simplest deployment target for this repo because it can provision the web app, API, and Postgres from one Blueprint file.
+
+Use [render.yaml](/workspaces/Perfect-Tutorials/render.yaml) with Render Blueprints.
+
+### 1. Create the Blueprint
+
+In Render:
+
+- connect this GitHub repository
+- create a new Blueprint
+- select [render.yaml](/workspaces/Perfect-Tutorials/render.yaml)
+
+This Blueprint creates:
+
+- `perfect-tutorials-web`
+- `perfect-tutorials-api`
+- `perfect-tutorials-db`
+
+The current Blueprint uses Render `free` plans so you can get the stack up quickly. For production, change those plans in [render.yaml](/workspaces/Perfect-Tutorials/render.yaml) or in the Render dashboard.
+
+### 2. Fill in the prompted environment variables
+
+Render will prompt for every `sync: false` value during initial Blueprint creation.
+
+Set these for the web service:
+
+- `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`
+- `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
+- `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME`
+- `CLERK_SECRET_KEY`
+- `ADMIN_EMAILS`
+
+Set these for the API service:
+
+- `STRIPE_SECRET_KEY`
+- `STRIPE_PUBLISHABLE_KEY`
+- `STRIPE_WEBHOOK_SECRET`
+- `CLERK_PUBLISHABLE_KEY`
+- `CLERK_SECRET_KEY`
+- `RESEND_API_KEY`
+- `RESEND_FROM_EMAIL`
+- `RESEND_INQUIRY_TO_EMAIL`
+- `CLOUDINARY_CLOUD_NAME`
+- `CLOUDINARY_API_KEY`
+- `CLOUDINARY_API_SECRET`
+
+### 3. First deploy and URL assumptions
+
+The Blueprint assumes these default Render service URLs:
+
+- `https://perfect-tutorials-web.onrender.com`
+- `https://perfect-tutorials-api.onrender.com`
+
+If you rename either service, or later attach a custom domain, update these settings in Render and trigger a rebuild of the web service:
+
+- `NEXT_PUBLIC_SITE_URL`
+- `INTERNAL_API_BASE_URL`
+- `FRONTEND_URL`
+- `CORS_ORIGINS`
+
+The frontend uses Docker build-time variables for `NEXT_PUBLIC_*`, which Render supports automatically for Docker services through service environment variables.
+
+### 4. Run Prisma migrations
+
+After the database and API are created, run:
+
+```bash
+cd perfect-tutorials
+pnpm --filter api db:migrate:deploy
+```
+
+Use the `DATABASE_URL` from the `perfect-tutorials-db` Render Postgres instance.
+
+### 5. Verify
+
+- open the web URL and test the contact form
+- verify sign-in/sign-up with Clerk
+- open `/dashboard/inquiries` with an admin account
+- verify the API health endpoint at `https://perfect-tutorials-api.onrender.com/api/health`
+
 ## Deploying To Vercel
 
 Deploy this monorepo as two separate Vercel projects:
