@@ -2,10 +2,43 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Navbar } from "../components/layout/navbar";
 import { Footer } from "../components/layout/footer";
+import { publicEnv } from "../lib/env";
+
+const siteUrl = publicEnv.siteUrl;
 
 export const metadata: Metadata = {
-  title: "Perfect Tutorials",
-  description: "Master Maths and Science with confidence.",
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: "Perfect Tutorials",
+    template: "%s | Perfect Tutorials",
+  },
+  description:
+    "Maths and science tutoring for high school and university students, with structured support built around confidence and measurable progress.",
+  applicationName: "Perfect Tutorials",
+  keywords: [
+    "maths tutor",
+    "science tutor",
+    "online tutoring",
+    "high school maths",
+    "physical science support",
+  ],
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    url: siteUrl,
+    siteName: "Perfect Tutorials",
+    title: "Perfect Tutorials",
+    description:
+      "Maths and science tutoring for students who need clearer explanations, stronger exam technique, and steady academic progress.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Perfect Tutorials",
+    description:
+      "Maths and science tutoring for high school and university students.",
+  },
 };
 
 export default function RootLayout({
@@ -15,7 +48,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
+      <body className="antialiased">
         <div className="flex min-h-screen flex-col">
           <Navbar />
           <main className="flex-1">{children}</main>

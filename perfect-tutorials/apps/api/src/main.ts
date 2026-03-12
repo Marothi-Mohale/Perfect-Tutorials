@@ -1,20 +1,19 @@
 import {
   BadRequestException,
+  Logger,
   ValidationError,
   ValidationPipe,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  const port = Number.parseInt(process.env.PORT ?? '3001', 10);
-  const corsOrigins = process.env.CORS_ORIGINS?.split(',')
-    .map((origin) => origin.trim())
-    .filter(Boolean);
-  const allowedOrigins = corsOrigins?.length
-    ? corsOrigins
-    : ['http://localhost:3000', 'http://127.0.0.1:3000'];
+  const logger = new Logger('Bootstrap');
+  const configService = app.get<ConfigService>(ConfigService);
+  const port = configService.getOrThrow<number>('app.port');
+  const allowedOrigins = configService.getOrThrow<string[]>('app.corsOrigins');
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -58,5 +57,6 @@ async function bootstrap() {
   httpServer.disable('x-powered-by');
 
   await app.listen(port, '0.0.0.0');
+  logger.log(`API listening on port ${port}`);
 }
 void bootstrap();

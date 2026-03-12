@@ -1,13 +1,14 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import { publicEnv } from "../lib/env";
 
 type FormState = {
   firstName: string;
   lastName: string;
   email: string;
   phone: string;
-  level: string;
+  levelOfStudy: string;
   subject: string;
   message: string;
 };
@@ -17,7 +18,7 @@ const initialState: FormState = {
   lastName: "",
   email: "",
   phone: "",
-  level: "",
+  levelOfStudy: "",
   subject: "",
   message: "",
 };
@@ -35,9 +36,6 @@ type InquiryApiError = {
     messages?: string[];
   }>;
 };
-
-const apiBaseUrl =
-  process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") ?? "http://localhost:3001/api";
 
 export function ContactForm() {
   const [formState, setFormState] = useState<FormState>(initialState);
@@ -62,7 +60,12 @@ export function ContactForm() {
     event.preventDefault();
     setFieldErrors({});
 
-    if (!formState.firstName || !formState.email || !formState.level || !formState.subject) {
+    if (
+      !formState.firstName ||
+      !formState.email ||
+      !formState.levelOfStudy ||
+      !formState.subject
+    ) {
       setSubmitState({
         status: "error",
         message: "Please complete the required fields before continuing.",
@@ -73,7 +76,7 @@ export function ContactForm() {
     setSubmitState({ status: "submitting" });
 
     try {
-      const response = await fetch(`${apiBaseUrl}/inquiries`, {
+      const response = await fetch(`${publicEnv.apiBaseUrl}/inquiries`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -219,9 +222,9 @@ export function ContactForm() {
           <select
             id="level"
             className="select"
-            value={formState.level}
-            onChange={(event) => updateField("level", event.target.value)}
-            aria-invalid={Boolean(fieldErrors.level)}
+            value={formState.levelOfStudy}
+            onChange={(event) => updateField("levelOfStudy", event.target.value)}
+            aria-invalid={Boolean(fieldErrors.levelOfStudy)}
             required
           >
             <option value="">Choose level</option>
@@ -229,9 +232,9 @@ export function ContactForm() {
             <option>Grade 10-12</option>
             <option>University</option>
           </select>
-          {fieldErrors.level ? (
+          {fieldErrors.levelOfStudy ? (
             <p className="mt-2 text-sm text-red-600" role="alert">
-              {fieldErrors.level.join(" ")}
+              {fieldErrors.levelOfStudy.join(" ")}
             </p>
           ) : null}
         </div>

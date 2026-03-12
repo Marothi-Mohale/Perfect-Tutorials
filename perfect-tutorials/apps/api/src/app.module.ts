@@ -1,10 +1,24 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { appConfig } from './config/app.config';
+import { validateEnv } from './config/env.validation';
 import { InquiriesModule } from './inquiries/inquiries.module';
+import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
-  imports: [InquiriesModule],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      cache: true,
+      envFilePath: ['.env.local', '.env'],
+      load: [appConfig],
+      validate: validateEnv,
+    }),
+    PrismaModule,
+    InquiriesModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
