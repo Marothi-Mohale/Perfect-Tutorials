@@ -104,6 +104,11 @@ select {
   margin-inline: auto;
 }
 
+.navbar-cta {
+  padding: 0.75rem 1.25rem;
+  font-size: 0.9rem;
+}
+
 /* Soft card styling */
 .surface-card {
   background: rgba(255, 255, 255, 0.9);

@@ -29,7 +29,7 @@ export class CreateInquiryDto {
   @IsString()
   @MinLength(1)
   @MaxLength(100)
-  level!: string;
+  levelOfStudy!: string;
 
   @IsString()
   @MinLength(1)

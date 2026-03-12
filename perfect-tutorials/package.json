@@ -2,8 +2,14 @@
   "name": "perfect-tutorials",
   "private": true,
   "scripts": {
+    "dev": "pnpm --parallel --filter web --filter api run dev",
     "dev:web": "pnpm --filter web dev",
     "dev:api": "pnpm --filter api start:dev",
+    "lint": "pnpm --filter web lint && pnpm --filter api lint",
+    "typecheck": "pnpm --filter web typecheck && pnpm --filter api typecheck",
+    "test": "pnpm --filter api test",
+    "test:e2e": "pnpm --filter api test:e2e",
+    "build": "pnpm --filter web build && pnpm --filter api build",
     "build:web": "pnpm --filter web build",
     "build:api": "pnpm --filter api build"
   }

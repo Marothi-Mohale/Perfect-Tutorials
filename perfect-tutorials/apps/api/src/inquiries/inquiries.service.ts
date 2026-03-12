@@ -1,41 +1,59 @@
 import { Injectable } from '@nestjs/common';
-import { randomUUID } from 'node:crypto';
+import { Inquiry } from '@prisma/client';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateInquiryDto } from './dto/create-inquiry.dto';
-
-type InquiryRecord = {
-  id: string;
-  firstName: string;
-  lastName: string | null;
-  email: string;
-  phone: string | null;
-  level: string;
-  subject: string;
-  message: string | null;
-  createdAt: string;
-};
+import { InquiryResponseDto } from './dto/inquiry-response.dto';
 
 @Injectable()
 export class InquiriesService {
-  private readonly inquiries: InquiryRecord[] = [];
+  constructor(private readonly prisma: PrismaService) {}
 
-  create(createInquiryDto: CreateInquiryDto) {
-    const inquiry: InquiryRecord = {
-      id: randomUUID(),
-      firstName: createInquiryDto.firstName.trim(),
-      lastName: createInquiryDto.lastName?.trim() || null,
-      email: createInquiryDto.email.trim().toLowerCase(),
-      phone: createInquiryDto.phone?.trim() || null,
-      level: createInquiryDto.level.trim(),
-      subject: createInquiryDto.subject.trim(),
-      message: createInquiryDto.message?.trim() || null,
-      createdAt: new Date().toISOString(),
+  async findAll(): Promise<{ inquiries: InquiryResponseDto[] }> {
+    const inquiries = await this.prisma.inquiry.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    return {
+      inquiries: inquiries.map((inquiry) => this.toResponseDto(inquiry)),
     };
+  }
 
-    this.inquiries.push(inquiry);
+  async create(
+    createInquiryDto: CreateInquiryDto,
+  ): Promise<{ message: string; inquiry: InquiryResponseDto }> {
+    const inquiry = await this.prisma.inquiry.create({
+      data: {
+        firstName: createInquiryDto.firstName.trim(),
+        lastName: createInquiryDto.lastName?.trim() || null,
+        email: createInquiryDto.email.trim().toLowerCase(),
+        phone: createInquiryDto.phone?.trim() || null,
+        levelOfStudy: createInquiryDto.levelOfStudy.trim(),
+        subject: createInquiryDto.subject.trim(),
+        message: createInquiryDto.message?.trim() || null,
+      },
+    });
 
     return {
       message: 'Inquiry submitted successfully',
-      inquiry,
+      inquiry: this.toResponseDto(inquiry),
+    };
+  }
+
+  private toResponseDto(inquiry: Inquiry): InquiryResponseDto {
+    return {
+      id: inquiry.id,
+      firstName: inquiry.firstName,
+      lastName: inquiry.lastName,
+      email: inquiry.email,
+      phone: inquiry.phone,
+      levelOfStudy: inquiry.levelOfStudy,
+      subject: inquiry.subject,
+      message: inquiry.message,
+      status: inquiry.status,
+      createdAt: inquiry.createdAt.toISOString(),
+      updatedAt: inquiry.updatedAt.toISOString(),
     };
   }
 }

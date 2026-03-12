@@ -1,0 +1,50 @@
+name: Frontend CI
+
+on:
+  push:
+    paths:
+      - "perfect-tutorials/apps/web/**"
+      - "perfect-tutorials/package.json"
+      - "perfect-tutorials/pnpm-lock.yaml"
+      - ".github/workflows/frontend-ci.yml"
+  pull_request:
+    paths:
+      - "perfect-tutorials/apps/web/**"
+      - "perfect-tutorials/package.json"
+      - "perfect-tutorials/pnpm-lock.yaml"
+      - ".github/workflows/frontend-ci.yml"
+
+jobs:
+  validate-web:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: perfect-tutorials
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: perfect-tutorials/pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint web app
+        run: pnpm --filter web lint
+
+      - name: Typecheck web app
+        run: pnpm --filter web typecheck
+
+      - name: Build web app
+        run: pnpm --filter web build
