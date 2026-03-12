@@ -61,19 +61,19 @@ export default function ContactPage() {
               <p>
                 Email:{" "}
                 <a
-                  href="mailto:info@perfecttutorials.co.za"
+                  href="mailto:mohalemarothi@gmail.com"
                   className="font-semibold hover:underline"
                 >
-                  info@perfecttutorials.co.za
+                  mohalemarothi@gmail.com
                 </a>
               </p>
               <p>
                 Phone:{" "}
-                <a href="tel:+270000000000" className="font-semibold hover:underline">
-                  +27 00 000 0000
+                <a href="tel:+27720697425" className="font-semibold hover:underline">
+                  0720697425
                 </a>
               </p>
-              <p>Cape Town, South Africa</p>
+              <p>50 Durban Road, Mowbray, Cape Town, 7700</p>
             </div>
           </div>
         </div>
