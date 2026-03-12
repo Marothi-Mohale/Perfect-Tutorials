@@ -1,0 +1,83 @@
+name: Azure App Service Deploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "perfect-tutorials/apps/web/**"
+      - "perfect-tutorials/apps/api/**"
+      - "perfect-tutorials/package.json"
+      - "perfect-tutorials/pnpm-lock.yaml"
+      - "perfect-tutorials/pnpm-workspace.yaml"
+      - ".github/workflows/azure-app-service.yml"
+
+env:
+  REGISTRY: ${{ secrets.AZURE_CONTAINER_REGISTRY_LOGIN_SERVER }}
+  WEB_IMAGE_NAME: perfect-tutorials-web
+  API_IMAGE_NAME: perfect-tutorials-api
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Azure Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ secrets.AZURE_CONTAINER_REGISTRY_USERNAME }}
+          password: ${{ secrets.AZURE_CONTAINER_REGISTRY_PASSWORD }}
+
+      - name: Build and push web image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./perfect-tutorials
+          file: ./perfect-tutorials/apps/web/Dockerfile
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.WEB_IMAGE_NAME }}:${{ github.sha }}
+            ${{ env.REGISTRY }}/${{ env.WEB_IMAGE_NAME }}:latest
+          build-args: |
+            NEXT_PUBLIC_SITE_URL=${{ vars.AZURE_WEB_SITE_URL }}
+            NEXT_PUBLIC_API_BASE_URL=${{ vars.AZURE_WEB_PUBLIC_API_BASE_URL }}
+            INTERNAL_API_BASE_URL=${{ vars.AZURE_WEB_INTERNAL_API_BASE_URL }}
+            NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }}
+            NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+            NEXT_PUBLIC_CLERK_SIGN_IN_URL=${{ vars.NEXT_PUBLIC_CLERK_SIGN_IN_URL }}
+            NEXT_PUBLIC_CLERK_SIGN_UP_URL=${{ vars.NEXT_PUBLIC_CLERK_SIGN_UP_URL }}
+            NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL=${{ vars.NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL }}
+            NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=${{ vars.NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL }}
+            NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=${{ vars.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME }}
+            ADMIN_EMAILS=${{ secrets.ADMIN_EMAILS }}
+
+      - name: Build and push api image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./perfect-tutorials
+          file: ./perfect-tutorials/apps/api/Dockerfile
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.API_IMAGE_NAME }}:${{ github.sha }}
+            ${{ env.REGISTRY }}/${{ env.API_IMAGE_NAME }}:latest
+
+      - name: Deploy web container to Azure App Service
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ vars.AZURE_WEB_APP_NAME }}
+          publish-profile: ${{ secrets.AZURE_WEB_APP_PUBLISH_PROFILE }}
+          images: ${{ env.REGISTRY }}/${{ env.WEB_IMAGE_NAME }}:${{ github.sha }}
+
+      - name: Deploy api container to Azure App Service
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ vars.AZURE_API_APP_NAME }}
+          publish-profile: ${{ secrets.AZURE_API_APP_PUBLISH_PROFILE }}
+          images: ${{ env.REGISTRY }}/${{ env.API_IMAGE_NAME }}:${{ github.sha }}
