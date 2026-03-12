@@ -1,14 +1,18 @@
+import Image from "next/image";
 import Link from "next/link";
-import { BrandLogo } from "./brand-logo";
 
 export function Footer() {
   return (
     <footer className="footer-theme mt-16">
       <div className="page-shell grid gap-10 py-14 md:grid-cols-3">
         <div>
-          <BrandLogo
-            className="inline-flex"
-            imageClassName="h-12 w-auto brightness-0 invert"
+          <Image
+            src="/CEO.jpg"
+            alt="Perfect Tutorials founder portrait"
+            width={460}
+            height={460}
+            sizes="(min-width: 768px) 22rem, 100vw"
+            className="mt-6 h-auto w-full max-w-[260px] rounded-[1.5rem] object-cover"
           />
           <p className="mt-4">
             Helping learners master Maths and Science with confidence, clarity,
