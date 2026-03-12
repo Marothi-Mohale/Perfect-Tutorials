@@ -8,17 +8,20 @@ const clerkOrigins = [
   "https://*.clerk.com",
 ];
 
+const clerkImageOrigins = ["https://img.clerk.com"];
+const botProtectionOrigins = ["https://challenges.cloudflare.com"];
+
 const contentSecurityPolicy = [
   "default-src 'self'",
   "base-uri 'self'",
   "form-action 'self'",
   "frame-ancestors 'none'",
-  `img-src 'self' data: blob: ${clerkOrigins.join(" ")}`,
+  `img-src 'self' data: blob: ${[...clerkOrigins, ...clerkImageOrigins].join(" ")}`,
   "font-src 'self' https://fonts.gstatic.com data:",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-  `script-src 'self' 'unsafe-inline' ${clerkOrigins.join(" ")}`,
-  `connect-src 'self' ${apiOrigin} ${clerkOrigins.join(" ")}`,
-  `frame-src 'self' ${clerkOrigins.join(" ")}`,
+  `script-src 'self' 'unsafe-inline' ${[...clerkOrigins, ...botProtectionOrigins].join(" ")}`,
+  `connect-src 'self' ${apiOrigin} ${[...clerkOrigins, ...botProtectionOrigins].join(" ")}`,
+  `frame-src 'self' ${[...clerkOrigins, ...botProtectionOrigins].join(" ")}`,
   "object-src 'none'",
   "media-src 'self'",
   "worker-src 'self' blob:",
