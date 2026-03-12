@@ -1,14 +1,10 @@
-import {
-  BadRequestException,
-  INestApplication,
-  ValidationError,
-  ValidationPipe,
-} from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 import { InquiryStatus } from '@prisma/client';
 import { AppModule } from './../src/app.module';
 import { ApiExceptionFilter } from './../src/common/filters/api-exception.filter';
+import { validationPipeOptions } from './../src/common/validation/validation-pipe-options';
 import { EmailService } from './../src/email/email.service';
 import { PaymentsService } from './../src/payments/payments.service';
 import { PrismaService } from './../src/prisma/prisma.service';
@@ -142,34 +138,7 @@ describe('AppController (e2e)', () => {
       .compile();
 
     app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(
-      new ValidationPipe({
-        whitelist: true,
-        forbidNonWhitelisted: true,
-        transform: true,
-        exceptionFactory: (validationErrors: ValidationError[]) =>
-          new BadRequestException({
-            code: 'VALIDATION_ERROR',
-            message: 'Validation failed',
-            errors: validationErrors.flatMap((validationError) => {
-              const constraints = Object.values(
-                validationError.constraints ?? {},
-              );
-
-              if (!constraints.length) {
-                return [];
-              }
-
-              return [
-                {
-                  field: validationError.property,
-                  messages: constraints,
-                },
-              ];
-            }),
-          }),
-      }),
-    );
+    app.useGlobalPipes(new ValidationPipe(validationPipeOptions));
     app.setGlobalPrefix('api');
     app.useGlobalFilters(new ApiExceptionFilter());
     await app.init();

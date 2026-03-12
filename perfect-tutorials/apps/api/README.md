@@ -23,7 +23,7 @@ pnpm test:e2e
 - Default port: `3001`
 - Global route prefix: `/api`
 - Health endpoint: `GET /api/health`
-- `CORS_ORIGINS` accepts a comma-separated allowlist. If unset, CORS is open.
+- `CORS_ORIGINS` accepts a comma-separated allowlist. If unset, the API falls back to the configured frontend origin plus `http://127.0.0.1:3000`.
 
 ## Production Notes
 

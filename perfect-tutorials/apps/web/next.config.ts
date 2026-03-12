@@ -2,21 +2,51 @@ import path from "node:path";
 import type { NextConfig } from "next";
 import { apiOrigin } from "./lib/env";
 
+const clerkOrigins = [
+  "https://*.clerk.accounts.dev",
+  "https://*.clerk.dev",
+  "https://*.clerk.com",
+];
+
 const contentSecurityPolicy = [
   "default-src 'self'",
   "base-uri 'self'",
   "form-action 'self'",
   "frame-ancestors 'none'",
-  "img-src 'self' data: blob:",
+  `img-src 'self' data: blob: ${clerkOrigins.join(" ")}`,
   "font-src 'self' https://fonts.gstatic.com data:",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-  "script-src 'self' 'unsafe-inline'",
-  `connect-src 'self' ${apiOrigin}`,
+  `script-src 'self' 'unsafe-inline' ${clerkOrigins.join(" ")}`,
+  `connect-src 'self' ${apiOrigin} ${clerkOrigins.join(" ")}`,
+  `frame-src 'self' ${clerkOrigins.join(" ")}`,
   "object-src 'none'",
   "media-src 'self'",
   "worker-src 'self' blob:",
   "upgrade-insecure-requests",
 ].join("; ");
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+
+const forwardedHostPatterns = new Set<string>([
+  "localhost:3000",
+  "127.0.0.1:3000",
+  "*.app.github.dev",
+  "*.github.dev",
+]);
+
+if (siteUrl) {
+  try {
+    forwardedHostPatterns.add(new URL(siteUrl).host);
+  } catch {
+    // Ignore invalid env values and rely on the default local/dev hosts.
+  }
+}
+
+const codespacesName = process.env.CODESPACE_NAME;
+
+if (codespacesName) {
+  forwardedHostPatterns.add(`${codespacesName}-3000.app.github.dev`);
+}
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
@@ -26,6 +56,11 @@ const nextConfig: NextConfig = {
   outputFileTracingRoot: path.join(__dirname, "../.."),
   turbopack: {
     root: path.join(__dirname, "../.."),
+  },
+  experimental: {
+    serverActions: {
+      allowedOrigins: [...forwardedHostPatterns],
+    },
   },
   async headers() {
     return [

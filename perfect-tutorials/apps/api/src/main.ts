@@ -1,13 +1,9 @@
-import {
-  BadRequestException,
-  Logger,
-  ValidationError,
-  ValidationPipe,
-} from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ApiExceptionFilter } from './common/filters/api-exception.filter';
+import { validationPipeOptions } from './common/validation/validation-pipe-options';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -16,34 +12,7 @@ async function bootstrap() {
   const port = configService.getOrThrow<number>('app.port');
   const allowedOrigins = configService.getOrThrow<string[]>('app.corsOrigins');
 
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      transform: true,
-      exceptionFactory: (validationErrors: ValidationError[]) =>
-        new BadRequestException({
-          code: 'VALIDATION_ERROR',
-          message: 'Validation failed',
-          errors: validationErrors.flatMap((validationError) => {
-            const constraints = Object.values(
-              validationError.constraints ?? {},
-            );
-
-            if (!constraints.length) {
-              return [];
-            }
-
-            return [
-              {
-                field: validationError.property,
-                messages: constraints,
-              },
-            ];
-          }),
-        }),
-    }),
-  );
+  app.useGlobalPipes(new ValidationPipe(validationPipeOptions));
   app.useGlobalFilters(new ApiExceptionFilter());
 
   app.setGlobalPrefix('api');
