@@ -4,7 +4,9 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { appConfig } from './config/app.config';
 import { validateEnv } from './config/env.validation';
+import { EmailModule } from './email/email.module';
 import { InquiriesModule } from './inquiries/inquiries.module';
+import { PaymentsModule } from './payments/payments.module';
 import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
@@ -16,8 +18,10 @@ import { PrismaModule } from './prisma/prisma.module';
       load: [appConfig],
       validate: validateEnv,
     }),
+    EmailModule,
     PrismaModule,
     InquiriesModule,
+    PaymentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -9,12 +9,13 @@ const optionalKeys = [
   'CLERK_PUBLISHABLE_KEY',
   'CLERK_SECRET_KEY',
   'RESEND_API_KEY',
+  'RESEND_FROM_EMAIL',
+  'RESEND_INQUIRY_TO_EMAIL',
+  'RESEND_SEND_STUDENT_CONFIRMATION',
   'CLOUDINARY_CLOUD_NAME',
   'CLOUDINARY_API_KEY',
   'CLOUDINARY_API_SECRET',
 ] as const;
-
-const requiredKeys = ['DATABASE_URL'] as const;
 
 const ensureString = (env: RawEnv, key: string) => {
   const value = env[key];
@@ -27,6 +28,8 @@ const ensureString = (env: RawEnv, key: string) => {
 };
 
 export const validateEnv = (env: RawEnv) => {
+  const requiredKeys =
+    env.NODE_ENV === 'test' ? ([] as const) : (['DATABASE_URL'] as const);
   const port = env.PORT;
 
   if (port !== undefined) {

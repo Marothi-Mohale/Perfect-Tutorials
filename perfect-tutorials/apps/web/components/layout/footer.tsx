@@ -30,9 +30,15 @@ export function Footer() {
         <div>
           <h4 className="text-sm font-semibold uppercase tracking-[0.2em]">Contact</h4>
           <div className="mt-4 space-y-3">
-            <p>Cape Town, South Africa</p>
-            <p>info@perfecttutorials.co.za</p>
-            <p>+27 00 000 0000</p>
+            <p>50 Durban Road, Cape Town, Western Cape, 7700</p>
+            <p>
+              <a href="mailto:mohalemarothi@gmail.com">
+                mohalemarothi@gmail.com
+              </a>
+            </p>
+            <p>
+              <a href="tel:0720697425">0720697425</a>
+            </p>
           </div>
         </div>
       </div>

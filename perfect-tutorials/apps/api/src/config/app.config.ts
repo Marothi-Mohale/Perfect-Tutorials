@@ -22,6 +22,9 @@ const parseCsv = (value: string | undefined, fallback: string[]): string[] => {
   return entries?.length ? entries : fallback;
 };
 
+const parseBoolean = (value: string | undefined): boolean =>
+  value?.toLowerCase() === 'true';
+
 export const appConfig = registerAs('app', () => ({
   nodeEnv: process.env.NODE_ENV ?? 'development',
   port: parsePort(process.env.PORT),
@@ -38,6 +41,11 @@ export const appConfig = registerAs('app', () => ({
     clerkPublishableKey: process.env.CLERK_PUBLISHABLE_KEY ?? '',
     clerkSecretKey: process.env.CLERK_SECRET_KEY ?? '',
     resendApiKey: process.env.RESEND_API_KEY ?? '',
+    resendFromEmail: process.env.RESEND_FROM_EMAIL ?? '',
+    resendInquiryToEmail: process.env.RESEND_INQUIRY_TO_EMAIL ?? '',
+    resendSendStudentConfirmation: parseBoolean(
+      process.env.RESEND_SEND_STUDENT_CONFIRMATION,
+    ),
     cloudinaryCloudName: process.env.CLOUDINARY_CLOUD_NAME ?? '',
     cloudinaryApiKey: process.env.CLOUDINARY_API_KEY ?? '',
     cloudinaryApiSecret: process.env.CLOUDINARY_API_SECRET ?? '',

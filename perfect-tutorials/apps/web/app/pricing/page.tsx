@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { CheckoutButton } from "@/components/pricing/checkout-button";
 
 const plans = [
   {
+    id: "starter-1-session",
     name: "Starter",
     price: "R499",
     sub: "Great for targeted support",
@@ -14,6 +16,7 @@ const plans = [
     featured: false,
   },
   {
+    id: "standard-4-sessions",
     name: "Standard",
     price: "R1,499",
     sub: "Best for steady progress",
@@ -24,8 +27,10 @@ const plans = [
       "Priority scheduling",
     ],
     featured: true,
+    checkoutEnabled: true,
   },
   {
+    id: "premium-8-sessions",
     name: "Premium",
     price: "R2,999",
     sub: "For intensive improvement",
@@ -87,6 +92,16 @@ export default function PricingPage() {
               >
                 Get Started
               </Link>
+              {plan.checkoutEnabled ? (
+                <CheckoutButton
+                  packageId={plan.id}
+                  className={`mt-3 ${
+                    plan.featured ? "btn-secondary" : "btn-primary"
+                  }`}
+                >
+                  Checkout with Stripe
+                </CheckoutButton>
+              ) : null}
             </div>
           ))}
         </div>

@@ -29,7 +29,19 @@ type SubmitState =
   | { status: "success"; message: string }
   | { status: "error"; message: string };
 
+type InquiryApiSuccess = {
+  success: true;
+  message: string;
+  data: {
+    inquiry: {
+      id: string;
+    };
+  };
+};
+
 type InquiryApiError = {
+  success?: false;
+  code?: string;
   message?: string;
   errors?: Array<{
     field?: string;
@@ -84,14 +96,11 @@ export function ContactForm() {
         body: JSON.stringify(formState),
       });
 
-      const payload = (await response.json()) as
-        | {
-            message?: string;
-          }
-        | InquiryApiError;
+      const payload = (await response.json()) as InquiryApiSuccess | InquiryApiError;
 
       if (!response.ok) {
-        const nextFieldErrors = ((payload as InquiryApiError).errors ?? []).reduce<
+        const errorPayload = payload as InquiryApiError;
+        const nextFieldErrors = (errorPayload.errors ?? []).reduce<
           Partial<Record<keyof FormState, string[]>>
         >((accumulator, issue) => {
           if (!issue.field || !issue.messages?.length) {
@@ -109,18 +118,19 @@ export function ContactForm() {
         setFieldErrors(nextFieldErrors);
         setSubmitState({
           status: "error",
-          message:
-            (payload as InquiryApiError).message ??
-            "We could not submit your inquiry. Please review the form and try again.",
+          message: deriveErrorMessage(errorPayload),
         });
         return;
       }
 
+      const successPayload = payload as InquiryApiSuccess;
       setFormState(initialState);
+      setFieldErrors({});
       setSubmitState({
         status: "success",
         message:
-          payload.message ?? "Your inquiry has been sent. We will respond within one business day.",
+          successPayload.message ??
+          "Your inquiry has been sent. We will respond within one business day.",
       });
     } catch {
       setSubmitState({
@@ -306,5 +316,23 @@ export function ContactForm() {
         We submit your enquiry securely to the Perfect Tutorials team.
       </p>
     </form>
+  );
+}
+
+function deriveErrorMessage(payload: InquiryApiError) {
+  if (payload.code === "DUPLICATE_INQUIRY") {
+    return (
+      payload.message ??
+      "A similar enquiry was already submitted recently. Please wait a few minutes before trying again."
+    );
+  }
+
+  if (payload.code === "VALIDATION_ERROR") {
+    return payload.message ?? "Please review the highlighted fields and try again.";
+  }
+
+  return (
+    payload.message ??
+    "We could not submit your inquiry right now. Please try again in a moment."
   );
 }

@@ -7,6 +7,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { ApiExceptionFilter } from './common/filters/api-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -22,6 +23,7 @@ async function bootstrap() {
       transform: true,
       exceptionFactory: (validationErrors: ValidationError[]) =>
         new BadRequestException({
+          code: 'VALIDATION_ERROR',
           message: 'Validation failed',
           errors: validationErrors.flatMap((validationError) => {
             const constraints = Object.values(
@@ -42,6 +44,7 @@ async function bootstrap() {
         }),
     }),
   );
+  app.useGlobalFilters(new ApiExceptionFilter());
 
   app.setGlobalPrefix('api');
   app.enableCors({
