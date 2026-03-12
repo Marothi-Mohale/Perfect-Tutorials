@@ -99,6 +99,11 @@ select {
   margin-inline: auto;
 }
 
+.nav-shell {
+  width: min(1380px, calc(100% - 1rem));
+  margin-inline: auto;
+}
+
 /* Soft card styling */
 .surface-card {
   background: rgba(255, 255, 255, 0.9);

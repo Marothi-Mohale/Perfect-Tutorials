@@ -19,7 +19,7 @@ export function BrandLogo({
       className={`brand-logo ${className}`.trim()}
     >
       <Image
-        src="/perfect_tutorials_logo.png"
+        src="/logo.png"
         alt="Perfect Tutorials"
         width={751}
         height={275}

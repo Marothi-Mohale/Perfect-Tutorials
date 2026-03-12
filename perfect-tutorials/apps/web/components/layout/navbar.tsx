@@ -15,8 +15,8 @@ const navLinks = [
 export function Navbar() {
   return (
     <header className="glass-nav sticky top-0 z-50">
-      <div className="page-shell flex items-center justify-between gap-4 py-3 md:gap-6">
-        <BrandLogo className="shrink-0" imageClassName="h-11 w-auto md:h-12" priority />
+      <div className="nav-shell flex items-center justify-between gap-4 py-3 md:gap-6">
+        <BrandLogo className="shrink-0" imageClassName="h-9 w-auto md:h-10" priority />
 
         <nav className="hidden items-center gap-6 md:flex">
           {navLinks.map((link) => (
