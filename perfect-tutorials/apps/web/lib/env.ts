@@ -1,12 +1,23 @@
 const removeTrailingSlash = (value: string) => value.replace(/\/$/, "");
 
+const defaultSiteUrl = "http://localhost:3000";
+const defaultApiBasePath = "/backend-api";
+
+const resolveApiBaseUrl = () => {
+  const configuredValue = process.env.NEXT_PUBLIC_API_BASE_URL?.trim();
+
+  if (!configuredValue) {
+    return defaultApiBasePath;
+  }
+
+  return removeTrailingSlash(configuredValue);
+};
+
 export const publicEnv = {
   siteUrl: removeTrailingSlash(
-    process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000',
+    process.env.NEXT_PUBLIC_SITE_URL ?? defaultSiteUrl,
   ),
-  apiBaseUrl: removeTrailingSlash(
-    process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3001/api',
-  ),
+  apiBaseUrl: resolveApiBaseUrl(),
   clerkPublishableKey:
     process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ?? '',
   clerkSignInUrl: process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL ?? '/sign-in',
@@ -17,4 +28,6 @@ export const publicEnv = {
     process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? '',
 };
 
-export const apiOrigin = new URL(publicEnv.apiBaseUrl).origin;
+export const apiOrigin = publicEnv.apiBaseUrl.startsWith("http")
+  ? new URL(publicEnv.apiBaseUrl).origin
+  : new URL(publicEnv.siteUrl).origin;

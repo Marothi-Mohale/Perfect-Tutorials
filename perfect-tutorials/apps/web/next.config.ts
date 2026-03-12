@@ -43,6 +43,8 @@ if (siteUrl) {
 }
 
 const codespacesName = process.env.CODESPACE_NAME;
+const internalApiBaseUrl =
+  process.env.INTERNAL_API_BASE_URL ?? "http://127.0.0.1:3001/api";
 
 if (codespacesName) {
   forwardedHostPatterns.add(`${codespacesName}-3000.app.github.dev`);
@@ -61,6 +63,14 @@ const nextConfig: NextConfig = {
     serverActions: {
       allowedOrigins: [...forwardedHostPatterns],
     },
+  },
+  async rewrites() {
+    return [
+      {
+        source: "/backend-api/:path*",
+        destination: `${internalApiBaseUrl}/:path*`,
+      },
+    ];
   },
   async headers() {
     return [

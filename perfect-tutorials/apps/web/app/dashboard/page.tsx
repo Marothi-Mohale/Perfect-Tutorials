@@ -1,7 +1,10 @@
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { currentUser } from "@clerk/nextjs/server";
+import Link from "next/link";
+import { getAdminAccess } from "@/lib/admin";
 
 export default async function DashboardPage() {
-  const authState = await auth();
+  const { authState, configuredAdminEmails, isAdmin, primaryEmail } =
+    await getAdminAccess();
 
   if (!authState.userId) {
     return authState.redirectToSignIn();
@@ -43,6 +46,31 @@ export default async function DashboardPage() {
                 Persist this Clerk user ID in the API later when you create your
                 application user table.
               </p>
+            </div>
+
+            <div className="rounded-2xl border border-[var(--border)] bg-white/80 p-5 md:col-span-2">
+              <h2 className="text-2xl">Admin Tools</h2>
+              <p className="mt-3">
+                Access the enquiries inbox here when your Clerk account is marked
+                as an admin.
+              </p>
+              <p className="mt-3 text-sm text-[var(--muted)]">
+                Signed-in email: {primaryEmail ?? "No email available"}
+              </p>
+              <p className="mt-2 text-sm text-[var(--muted)]">
+                Admin access: {isAdmin ? "granted" : "not granted"}
+              </p>
+              <p className="mt-2 text-sm text-[var(--muted)]">
+                Configured admin emails:{" "}
+                {configuredAdminEmails.length > 0
+                  ? configuredAdminEmails.join(", ")
+                  : "none"}
+              </p>
+              <div className="mt-5">
+                <Link href="/dashboard/inquiries" className="btn-primary">
+                  Open Enquiries
+                </Link>
+              </div>
             </div>
           </div>
         </div>
