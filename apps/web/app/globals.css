@@ -1,4 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap");
 @import "tailwindcss";
 
 :root {
@@ -22,6 +21,8 @@
   --accent-gold: #ffd166;
   --accent-mint: #7ef0cc;
   --accent-indigo: #6676ff;
+  --font-sans: "Avenir Next", "Segoe UI", sans-serif;
+  --font-serif: Georgia, "Times New Roman", serif;
 }
 
 * {
@@ -42,7 +43,7 @@ body {
     radial-gradient(circle at bottom left, rgba(126, 240, 204, 0.12), transparent 22%),
     linear-gradient(160deg, #fcfbff 0%, #f2f5ff 48%, #eef7ff 100%);
   color: var(--text);
-  font-family: "DM Sans", sans-serif;
+  font-family: var(--font-sans);
 }
 
 h1,
@@ -53,7 +54,7 @@ h5,
 h6 {
   margin: 0;
   color: var(--navy);
-  font-family: "DM Serif Display", serif;
+  font-family: var(--font-serif);
   letter-spacing: -0.02em;
 }
 
